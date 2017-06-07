@@ -1,0 +1,10 @@
+{
+    "require": {
+        "mindplay/testies": "^0.3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "mindplay\\sql_parser\\": "src/"
+        }
+    }
+}
