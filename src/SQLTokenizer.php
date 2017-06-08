@@ -68,11 +68,11 @@ class SQLTokenizer
     }
 
     /**
-     * @return string|array|null
+     * @return string|array
      */
     protected function token()
     {
-        if ($token = $this->consume('\w+')) {
+        if ("" !== $token = $this->consume('\w+')) {
             return $token;
         }
 
@@ -84,7 +84,7 @@ class SQLTokenizer
             return $token;
         }
 
-        if ($token = $this->consume('[\*,.+-\/]')) {
+        if ($token = $this->consume('[\*,.+-\/=]')) {
             return $token;
         }
 
@@ -105,11 +105,11 @@ class SQLTokenizer
         }
 
         if ($this->isEOF()) {
-            return null; // end of file/statement
+            return ""; // end of file/statement
         }
 
         if ($this->consume(";")) {
-            return null; // end of statement
+            return ""; // end of statement
         }
 
         $this->fail("expected SQL token");
@@ -186,7 +186,7 @@ class SQLTokenizer
                     return $tokens;
                 }
 
-                if ($token = $this->token()) {
+                if ("" !== $token = $this->token()) {
                     $tokens[] = $token;
                 } else {
                     $this->fail("expected token or group end: {$closing}");
@@ -236,7 +236,7 @@ class SQLTokenizer
                     return implode('', $tokens);
                 }
 
-                if ($token = $this->consume($not_quote)) {
+                if ("" !== $token = $this->consume($not_quote)) {
                     $tokens[] = $token;
 
                     continue;
