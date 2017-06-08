@@ -1,10 +1,20 @@
 <?php
 
-namespace mindplay\sql_parser;
+namespace Kodus\SQL;
 
 use RuntimeException;
 
-class SQLTokenizer
+/**
+ * This class implements a simple recursive descent parser for minimal tokenization
+ * of files containing one or more MySQL or PostgreSQL statements.
+ *
+ * It's used internally by {@see Splitter} which provides the main point of entry -
+ * if you want to use the tokenizer for something else, have a look at the test-suite
+ * which contains a specification demonstrating the very simple token output format.
+ *
+ * @see Splitter::split()
+ */
+class Tokenizer
 {
     /**
      * @var int

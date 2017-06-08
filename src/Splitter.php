@@ -1,8 +1,11 @@
 <?php
 
-namespace mindplay\sql_parser;
+namespace Kodus\SQL;
 
-abstract class SQLSplitter
+/**
+ * This class implements comment-stripping and kerjiggers the SQL tokens back into statements.
+ */
+abstract class Splitter
 {
     /**
      * @param string $sql
@@ -12,7 +15,7 @@ abstract class SQLSplitter
      */
     public static function split(string $sql, bool $strip_comments = true)
     {
-        $tokens = SQLTokenizer::tokenize($sql);
+        $tokens = Tokenizer::tokenize($sql);
 
         if ($strip_comments) {
             $tokens = self::stripComments($tokens);
