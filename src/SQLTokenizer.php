@@ -68,7 +68,7 @@ class SQLTokenizer
     }
 
     /**
-     * @return string|null
+     * @return string|array|null
      */
     protected function token()
     {
@@ -220,8 +220,10 @@ class SQLTokenizer
             $not_quote = '[^' . preg_quote($quote) . ']';
 
             while (true) {
-                if ($token = $this->consume($not_quote)) {
-                    $tokens[] = $token;
+                if ($this->is('\\')) {
+                    $tokens[] = substr($this->input, $this->offset, 2);
+
+                    $this->offset += 2;
 
                     continue;
                 }
@@ -234,10 +236,8 @@ class SQLTokenizer
                     return implode('', $tokens);
                 }
 
-                if ($this->is('\\')) {
-                    $tokens[] = substr($this->input, 0, 2);
-
-                    $this->offset += 2;
+                if ($token = $this->consume($not_quote)) {
+                    $tokens[] = $token;
 
                     continue;
                 }

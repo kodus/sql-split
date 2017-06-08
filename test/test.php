@@ -5,6 +5,8 @@ use mindplay\sql_parser\SQLTokenizer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
+eq(SQLTokenizer::tokenize("SELECT 'foo\\'\\\\'"), [["SELECT", " ", "'foo\\'\\\\'"]]);
+
 test(
     'single statement',
     function () {
@@ -34,6 +36,7 @@ test(
         eq(SQLTokenizer::tokenize("SELECT (({[1,2]}))"), [["SELECT", " ", ["(", ["(", ["{", ["[", "1", ",", "2", "]"], "}"], ")"], ")"]]], "nested brackets/braces");
         eq(SQLTokenizer::tokenize('CREATE FUNCTION foo AS $$RETURN $1$$;'), [["CREATE", " ", "FUNCTION", " ", "foo", " ", "AS", " ", '$$RETURN $1$$']], "stored procedure");
         eq(SQLTokenizer::tokenize('SELECT $$FOO$$; SELECT $$BAR$$'), [["SELECT", " ", '$$FOO$$'], ["SELECT", " ", '$$BAR$$']], "dollar-quoted strings");
+        eq(SQLTokenizer::tokenize("SELECT 'foo\\'\\\\'"), [["SELECT", " ", "'foo\\'\\\\'"]]);
     }
 );
 
