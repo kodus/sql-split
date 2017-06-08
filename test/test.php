@@ -42,7 +42,7 @@ test(
 test(
     'comments',
     function () {
-        eq(SQLTokenizer::tokenize("-- one\nSELECT -- two\n1; -- three\n-- four"), [["-- one\n", "SELECT", " ", "-- two\n", "1"], ["-- three\n", "-- four"]]);
+        eq(SQLTokenizer::tokenize("-- one\nSELECT -- two\n1; -- three\n-- four"), [["-- one", "\n", "SELECT", " ", "-- two", "\n", "1"], ["-- three", "\n", "-- four"]]);
         eq(SQLTokenizer::tokenize("/* one\ntwo */\nSELECT 1;/* three\nfour */\nSELECT 2;"), [["/* one\ntwo */", "\n", "SELECT", " ", "1"], ["/* three\nfour */", "\n", "SELECT", " ", "2"]]);
     }
 );
@@ -51,8 +51,7 @@ test(
     'split statements',
     function () {
         eq(SQLSplitter::split("SELECT 1; SELECT 2;"), ["SELECT 1", "SELECT 2"]);
-        eq(SQLSplitter::split("-- one\nSELECT -- two\n1; -- three\n-- four"), ["SELECT 1"]);
-        eq(SQLSplitter::split("-- one\r\nSELECT -- two\r\n1; -- three\r\n-- four\r\n"), ["SELECT 1"]);
+        eq(SQLSplitter::split("-- one\nSELECT -- two\n1; -- three\n-- four"), ["SELECT \n1"]);
         eq(SQLSplitter::split("-- one\nSELECT -- two\n1; -- three\n-- four", false), ["-- one\nSELECT -- two\n1", "-- three\n-- four"]);
         eq(SQLSplitter::split("/* one\ntwo */\nSELECT 1;/* three\nfour */\nSELECT 2;"), ["SELECT 1", "SELECT 2"]);
         eq(SQLSplitter::split("/* one\ntwo */\nSELECT 1;\n/* three\nfour */\nSELECT 2;", false), ["/* one\ntwo */\nSELECT 1", "/* three\nfour */\nSELECT 2"]);
@@ -223,10 +222,11 @@ $mysql_script = <<<SQL
 DELIMITER $$
 
 CREATE PROCEDURE dorepeat(p1 INT)
- BEGIN
-   SET @x = 0; -- comment
-   REPEAT SET @x = @x + 1; UNTIL @x > p1 END REPEAT;
- END $$
+  BEGIN
+    SET @x = 0;-- comment
+    REPEAT SET @x = @x + 1; UNTIL @x > p1 END REPEAT;
+  END
+$$
 
 DELIMITER ;
 -- comment
@@ -236,10 +236,10 @@ SQL;
 
 $mysql_statements = <<<SQL
 CREATE PROCEDURE dorepeat(p1 INT)
- BEGIN
-   SET @x = 0;
-   REPEAT SET @x = @x + 1; UNTIL @x > p1 END REPEAT;
- END
+  BEGIN
+    SET @x = 0;
+    REPEAT SET @x = @x + 1; UNTIL @x > p1 END REPEAT;
+  END
 -----
 CALL dorepeat(1000)
 -----

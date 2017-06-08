@@ -144,7 +144,7 @@ class SQLTokenizer
     protected function comment()
     {
         if ($start = $this->consume('--')) {
-            $comment = $this->consume(".*?(\n|\r\n|\$)");
+            $comment = $this->consume("[^\r\n]*");
 
             return "{$start}{$comment}";
         }
