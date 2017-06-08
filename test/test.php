@@ -203,7 +203,7 @@ FOR EACH STATEMENT
 EXECUTE PROCEDURE "blocks".delete_orphaned_blocks();
 SQL;
 
-test("complex real-world use-case", function () use ($sql_template) {
+test("postgres use-case", function () use ($sql_template) {
     $expected_statements = array_map(
         function (string $sql) {
             return rtrim(trim($sql), ";");
@@ -216,6 +216,38 @@ test("complex real-world use-case", function () use ($sql_template) {
     foreach (SQLSplitter::split($sql, false) as $index => $statement) {
         eq($statement, $expected_statements[$index]);
     }
+});
+
+$mysql_script = <<<SQL
+-- delimiter test
+DELIMITER $$
+
+CREATE PROCEDURE dorepeat(p1 INT)
+ BEGIN
+   SET @x = 0; -- comment
+   REPEAT SET @x = @x + 1; UNTIL @x > p1 END REPEAT;
+ END $$
+
+DELIMITER ;
+-- comment
+CALL dorepeat(1000);
+SELECT @x;
+SQL;
+
+$mysql_statements = <<<SQL
+CREATE PROCEDURE dorepeat(p1 INT)
+ BEGIN
+   SET @x = 0;
+   REPEAT SET @x = @x + 1; UNTIL @x > p1 END REPEAT;
+ END
+-----
+CALL dorepeat(1000)
+-----
+SELECT @x
+SQL;
+
+test("mysql use-case", function () use ($mysql_script, $mysql_statements) {
+    eq(SQLSplitter::split($mysql_script), array_map("trim", explode("-----", $mysql_statements)));
 });
 
 exit(run());

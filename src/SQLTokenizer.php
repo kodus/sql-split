@@ -17,6 +17,11 @@ class SQLTokenizer
     protected $input;
 
     /**
+     * @var string
+     */
+    protected $delimiter_pattern = ";";
+
+    /**
      * @param string $input
      *
      * @return array tree-structure of SQL tokens
@@ -60,7 +65,21 @@ class SQLTokenizer
 
         $tokens = [];
 
-        while ($token = $this->token()) {
+        while ("" !== $token = $this->token()) {
+            if (is_string($token) && preg_match('/^delimiter$/i', $token) === 1) {
+                $this->consume('[ ]*');
+
+                $delimiter = trim($this->consume('.*?[\r\n]+'));
+
+                if ($delimiter === "") {
+                    $this->fail("expected delimiter character(s)");
+                }
+
+                $this->delimiter_pattern = preg_quote($delimiter);
+
+                continue; // omits DELIMITER command - it isn't part of SQL statement syntax
+            }
+
             $tokens[] = $token;
         }
 
@@ -68,10 +87,14 @@ class SQLTokenizer
     }
 
     /**
-     * @return string|array
+     * @return array|string
      */
     protected function token()
     {
+        if ($this->consume($this->delimiter_pattern)) {
+            return ""; // end of statement
+        }
+
         if ("" !== $token = $this->consume('\w+')) {
             return $token;
         }
@@ -84,7 +107,11 @@ class SQLTokenizer
             return $token;
         }
 
-        if ($token = $this->consume('[\*,.+-\/=]')) {
+        if ($token = $this->consume('[\*,.+-\/=;<>]')) {
+            return $token;
+        }
+
+        if ($token = $this->consume('\@\w+')) {
             return $token;
         }
 
@@ -106,10 +133,6 @@ class SQLTokenizer
 
         if ($this->isEOF()) {
             return ""; // end of file/statement
-        }
-
-        if ($this->consume(";")) {
-            return ""; // end of statement
         }
 
         $this->fail("expected SQL token");
@@ -181,7 +204,7 @@ class SQLTokenizer
                 if ($this->is($closing)) {
                     $tokens[] = $closing;
 
-                    $this->offset +=1 ;
+                    $this->offset +=1;
 
                     return $tokens;
                 }
