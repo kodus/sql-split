@@ -261,12 +261,12 @@ class SQLTokenizer
 
     protected function matches(string $pattern): bool
     {
-        return preg_match("/^{$pattern}/s", substr($this->input, $this->offset)) === 1;
+        return preg_match("/{$pattern}/sA", $this->input, $matches, 0, $this->offset) === 1;
     }
 
     protected function consume(string $pattern): string
     {
-        if (preg_match("/^{$pattern}/s", substr($this->input, $this->offset), $matches) === 1) {
+        if (preg_match("/{$pattern}/sA", $this->input, $matches, 0, $this->offset) === 1) {
             $this->offset += strlen($matches[0]);
 
             return $matches[0];
