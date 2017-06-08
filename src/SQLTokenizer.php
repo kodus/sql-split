@@ -217,7 +217,7 @@ class SQLTokenizer
         if ($quote = $this->consume('[`\'"]')) {
             $tokens = [$quote];
 
-            $not_quote = '[^' . preg_quote($quote) . ']';
+            $not_quote = '[^' . preg_quote($quote) . '\\\\]*';
 
             while (true) {
                 if ($this->is('\\')) {
