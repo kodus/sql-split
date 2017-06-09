@@ -36,6 +36,7 @@ test(
         eq(Tokenizer::tokenize('CREATE FUNCTION foo AS $$RETURN $1$$;'), [["CREATE", " ", "FUNCTION", " ", "foo", " ", "AS", " ", '$$RETURN $1$$']], "stored procedure");
         eq(Tokenizer::tokenize('SELECT $$FOO$$; SELECT $$BAR$$'), [["SELECT", " ", '$$FOO$$'], ["SELECT", " ", '$$BAR$$']], "dollar-quoted strings");
         eq(Tokenizer::tokenize("SELECT 'foo\\'\\\\'"), [["SELECT", " ", "'foo\\'\\\\'"]]);
+        eq(Tokenizer::tokenize("SELECT '{\"one\":\"two\"}'::jsonb"), [["SELECT", " ", "'{\"one\":\"two\"}'", "::", "jsonb"]]);
     }
 );
 

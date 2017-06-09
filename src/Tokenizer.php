@@ -117,12 +117,20 @@ class Tokenizer
             return $token;
         }
 
-        if ($token = $this->consume('[\*,.+-\/=;<>]')) {
-            return $token;
+        if ($token = $this->consume('\@\w+')) {
+            return $token; // @var
         }
 
-        if ($token = $this->consume('\@\w+')) {
-            return $token;
+        if ($token = $this->consume(':\w+')) {
+            return $token; // :var (PDO placeholder)
+        }
+
+        if ($token = $this->consume('[+\-\*\/.,!=^|&<>:@%~#]+')) {
+            return $token; // various operators
+        }
+
+        if ($token = $this->consume(';')) {
+            return $token; // statement separator (when $delimiter_pattern has been modified)
         }
 
         if ($token = $this->quoted()) {
@@ -131,10 +139,6 @@ class Tokenizer
 
         if ($tokens = $this->grouped()) {
             return $tokens;
-        }
-
-        if ($token = $this->placeholder()) {
-            return $token;
         }
 
         if ($token = $this->dollarquoted()) {
@@ -225,18 +229,6 @@ class Tokenizer
                     $this->fail("expected token or group end: {$closing}");
                 }
             }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return string|null
-     */
-    protected function placeholder()
-    {
-        if ($token = $this->consume(':\w+')) {
-            return $token;
         }
 
         return null;
