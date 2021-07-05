@@ -3,7 +3,8 @@
 A simple parser to split SQL (and/or DDL) files into individual SQL queries and strip comments.
 
 [![PHP Version](https://img.shields.io/badge/php-7.0%2B-blue.svg)](https://packagist.org/packages/kodus/sql-split)
-[![Build Status](https://travis-ci.org/kodus/sql-split.svg?branch=master)](https://travis-ci.org/kodus/sql-split)
+[![PHP Version](https://img.shields.io/badge/php-8.0%2B-blue.svg)](https://packagist.org/packages/kodus/sql-split)
+[![Build Status](https://travis-ci.com/kodus/sql-split.svg?branch=master)](https://travis-ci.com/kodus/sql-split)
 
 ### Install via Composer
 
