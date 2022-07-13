@@ -8,20 +8,21 @@
             "name": "Rasmus Schultz",
             "email": "rasmus@mindplay.dk"
         },
-	{
+	    {
             "name": "Thomas Nordahl Pedersen",
             "email": "thno@jfmedier.dk"
-	}
+	    }
     ],
     "require": {
-        "php": "^7.0|^8.0"
-    },
-    "require-dev": {
-        "mindplay/testies": "^0.3.0"
+        "php": ">=7.4"
     },
     "autoload": {
         "psr-4": {
             "Kodus\\SQL\\": "src/"
         }
+    },
+    "require-dev": {
+        "codeception/codeception": "^4.2",
+        "codeception/module-asserts": "^2.0"
     }
 }
