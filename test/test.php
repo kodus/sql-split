@@ -1,7 +1,7 @@
 <?php
 
-use Kodus\SQL\Splitter;
-use Kodus\SQL\Tokenizer;
+use Kodus\SQLSplit\Splitter;
+use Kodus\SQLSplit\Tokenizer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
