@@ -41,6 +41,16 @@ test(
 );
 
 test(
+    'Empty statements',
+    function () {
+        eq(Tokenizer::tokenize("SELECT 1;; SELECT 2"), [["SELECT", " ", "1"], ["SELECT", " ", "2"]], "Empty statement - in between");
+        eq(Tokenizer::tokenize(";;SELECT 1; SELECT 2;"), [["SELECT", " ", "1"], ["SELECT", " ", "2"]], "Empty statements - first");
+        eq(Tokenizer::tokenize("SELECT 1; SELECT 2;;;"), [["SELECT", " ", "1"], ["SELECT", " ", "2"]], "Empty statements - last");
+        eq(Tokenizer::tokenize(";;;;SELECT 1;;;; SELECT 2;;;"), [["SELECT", " ", "1"], ["SELECT", " ", "2"]], "Empty statements - all over");
+    }
+);
+
+test(
     'comments',
     function () {
         eq(Tokenizer::tokenize("-- one\nSELECT -- two\n1; -- three\n-- four"), [["-- one", "\n", "SELECT", " ", "-- two", "\n", "1"], ["-- three", "\n", "-- four"]]);
