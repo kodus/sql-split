@@ -138,6 +138,26 @@ class TokenizerCest
                     ["/* three\nfour */", "\n", "SELECT", " ", "2"],
                 ],
             ],
+            [
+                self::MESSAGE  => "Empty statement - in between",
+                self::INPUT    => "SELECT 1;; SELECT 2",
+                self::EXPECTED => [["SELECT", " ", "1"], ["SELECT", " ", "2"]],
+            ],
+            [
+                self::MESSAGE  => "Empty statements - first",
+                self::INPUT    => ";;SELECT 1; SELECT 2;",
+                self::EXPECTED => [["SELECT", " ", "1"], ["SELECT", " ", "2"]],
+            ],
+            [
+                self::MESSAGE  => "Empty statements - last",
+                self::INPUT    => "SELECT 1; SELECT 2;;;",
+                self::EXPECTED => [["SELECT", " ", "1"], ["SELECT", " ", "2"]],
+            ],
+            [
+                self::MESSAGE  => "Empty statements - all over",
+                self::INPUT    => ";;;;SELECT 1;;;; SELECT 2;;;",
+                self::EXPECTED => [["SELECT", " ", "1"], ["SELECT", " ", "2"]],
+            ],
         ];
     }
 }

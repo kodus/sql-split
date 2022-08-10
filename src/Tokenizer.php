@@ -55,14 +55,23 @@ class Tokenizer
     {
         $statements = [];
 
-        while ($result = $this->statement()) {
-            $statements[] = $result;
-        }
+        do {
+            $result = $this->statement();
+            if ($result !== null && count($result) > 0) {
+                $statements[] = $result;
+            }
+        } while ($result !== null);
 
         return $statements;
     }
 
     /**
+     * Returns an array containing the tokens in the next statement of the input.
+     *
+     * Returns empty array on empty statements (i.e. repeated delimiters, like: ;;;).
+     *
+     * Returns null if End-Of-File reached.
+     *
      * @return string[]|null
      */
     protected function statement()
@@ -76,6 +85,10 @@ class Tokenizer
         $tokens = [];
 
         while ("" !== $token = $this->token()) {
+            /**
+             * DEV NOTE: This checks for DELIMITER statement, that changes delimiter from ; to something else.
+             * If detected, it will extract the new DELIMITER and reassign $this->delimiter_pattern.
+             */
             if (is_string($token) && preg_match('/^delimiter$/i', $token) === 1) {
                 $this->consume('[ ]*');
 
@@ -218,7 +231,7 @@ class Tokenizer
                 if ($this->is($closing)) {
                     $tokens[] = $closing;
 
-                    $this->offset +=1;
+                    $this->offset += 1;
 
                     return $tokens;
                 }
