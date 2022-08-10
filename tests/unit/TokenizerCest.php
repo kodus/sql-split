@@ -3,8 +3,7 @@
 namespace unit;
 
 use Codeception\Example;
-use Codeception\PHPUnit\TestCase;
-use Kodus\SQL\Tokenizer;
+use Kodus\SQLSplit\Tokenizer;
 use UnitTester;
 
 class TokenizerCest
@@ -137,6 +136,26 @@ class TokenizerCest
                     ["/* one\ntwo */", "\n", "SELECT", " ", "1"],
                     ["/* three\nfour */", "\n", "SELECT", " ", "2"],
                 ],
+            ],
+            [
+                self::MESSAGE  => "Empty statement - in between",
+                self::INPUT    => "SELECT 1;; SELECT 2",
+                self::EXPECTED => [["SELECT", " ", "1"], ["SELECT", " ", "2"]],
+            ],
+            [
+                self::MESSAGE  => "Empty statements - first",
+                self::INPUT    => ";;SELECT 1; SELECT 2;",
+                self::EXPECTED => [["SELECT", " ", "1"], ["SELECT", " ", "2"]],
+            ],
+            [
+                self::MESSAGE  => "Empty statements - last",
+                self::INPUT    => "SELECT 1; SELECT 2;;;",
+                self::EXPECTED => [["SELECT", " ", "1"], ["SELECT", " ", "2"]],
+            ],
+            [
+                self::MESSAGE  => "Empty statements - all over",
+                self::INPUT    => ";;;;SELECT 1;;;; SELECT 2;;;",
+                self::EXPECTED => [["SELECT", " ", "1"], ["SELECT", " ", "2"]],
             ],
         ];
     }

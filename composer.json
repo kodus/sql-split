@@ -8,10 +8,10 @@
             "name": "Rasmus Schultz",
             "email": "rasmus@mindplay.dk"
         },
-	    {
+        {
             "name": "Thomas Nordahl Pedersen",
             "email": "thno@jfmedier.dk"
-	    }
+        }
     ],
     "require": {
         "php": ">=8.0"

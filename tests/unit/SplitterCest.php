@@ -3,7 +3,7 @@
 namespace unit;
 
 use Codeception\Example;
-use Kodus\SQL\Splitter;
+use Kodus\SQLSplit\Splitter;
 use UnitTester;
 
 class SplitterCest

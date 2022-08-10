@@ -12,9 +12,9 @@ From version 2.0.0, the namespace of the `Splitter` and `Tokenizer` has changed 
 <?php
 
 -use Kodus\SQLSplit\Splitter;
-+use Kodus\SQLSPlit\Splitter;
++use Kodus\SQLSplit\Splitter;
 -use Kodus\SQLSplit\Tokenizer;
-+use Kodus\SQLSPlit\Tokenizer;
++use Kodus\SQLSplit\Tokenizer;
 ```
 
 _The namespace Kodus/SQL collided with a namespace of another (private) kodus repository. The namespace `Kodus\SQL` is
