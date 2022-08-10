@@ -1,6 +1,6 @@
 <?php
 
-namespace Kodus\SQL;
+namespace Kodus\SQLSplit;
 
 use RuntimeException;
 

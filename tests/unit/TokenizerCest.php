@@ -3,8 +3,7 @@
 namespace unit;
 
 use Codeception\Example;
-use Codeception\PHPUnit\TestCase;
-use Kodus\SQL\Tokenizer;
+use Kodus\SQLSplit\Tokenizer;
 use UnitTester;
 
 class TokenizerCest

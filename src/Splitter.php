@@ -1,6 +1,6 @@
 <?php
 
-namespace Kodus\SQL;
+namespace Kodus\SQLSplit;
 
 /**
  * This class implements comment-stripping and kerjiggers the SQL tokens back into statements.
