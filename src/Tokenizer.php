@@ -106,8 +106,6 @@ class Tokenizer
 
     /**
      * TODO: Refactor this - cyclomatic complexity > 10
-     *
-     * @return array|string
      */
     protected function token(): array|string
     {
@@ -250,9 +248,6 @@ class Tokenizer
         return null;
     }
 
-    /**
-     * @return string|null
-     */
     protected function quoted(): ?string
     {
         $quote = $this->consume('[`\'"]');
