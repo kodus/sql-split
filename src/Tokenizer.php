@@ -16,27 +16,18 @@ use RuntimeException;
  */
 class Tokenizer
 {
-    /**
-     * @var int
-     */
-    protected $offset = 0;
+    protected int $offset = 0;
 
-    /**
-     * @var string
-     */
-    protected $input;
+    protected string $input;
 
-    /**
-     * @var string
-     */
-    protected $delimiter_pattern = ";";
+    protected string $delimiter_pattern = ";";
 
     /**
      * @param string $input
      *
      * @return array tree-structure of SQL tokens
      */
-    public static function tokenize(string $input)
+    public static function tokenize(string $input): array
     {
         $parser = new self($input);
 
@@ -51,7 +42,7 @@ class Tokenizer
     /**
      * @return string[]
      */
-    protected function statements()
+    protected function statements(): array
     {
         $statements = [];
 
@@ -61,6 +52,7 @@ class Tokenizer
                 $statements[] = $result;
             }
         } while ($result !== null);
+
 
         return $statements;
     }
@@ -74,7 +66,7 @@ class Tokenizer
      *
      * @return string[]|null
      */
-    protected function statement()
+    protected function statement(): ?array
     {
         $this->consume('\s*');
 
@@ -84,12 +76,15 @@ class Tokenizer
 
         $tokens = [];
 
-        while ("" !== $token = $this->token()) {
+        $token = $this->token();
+        while ($token !== "") {
             /**
              * DEV NOTE: This checks for DELIMITER statement, that changes delimiter from ; to something else.
              * If detected, it will extract the new DELIMITER and reassign $this->delimiter_pattern.
              */
             if (is_string($token) && preg_match('/^delimiter$/i', $token) === 1) {
+                // Omit DELIMITER command - it isn't part of SQL statement syntax
+
                 $this->consume('[ ]*');
 
                 $delimiter = trim($this->consume('.*?[\r\n]+'));
@@ -100,61 +95,71 @@ class Tokenizer
 
                 $this->delimiter_pattern = preg_quote($delimiter);
 
-                continue; // omits DELIMITER command - it isn't part of SQL statement syntax
+            } else {
+                $tokens[] = $token;
             }
-
-            $tokens[] = $token;
+            $token = $this->token();
         }
 
         return $tokens;
     }
 
     /**
-     * @return array|string
+     * TODO: Refactor this - cyclomatic complexity > 10
      */
-    protected function token()
+    protected function token(): array|string
     {
         if ($this->consume($this->delimiter_pattern)) {
             return ""; // end of statement
         }
 
-        if ("" !== $token = $this->consume('\w+')) {
+        $token = $this->consume('\w+');
+        if ($token !== "") {
             return $token;
         }
 
-        if ($token = $this->consume('\s+')) {
+        $token = $this->consume('\s+');
+        if ($token) {
             return $token;
         }
 
-        if ($token = $this->comment()) {
+        $token = $this->comment();
+        if ($token) {
             return $token;
         }
 
-        if ($token = $this->consume('\@\w+')) {
+        $token = $this->consume('\@\w+');
+        if ($token) {
             return $token; // @var
         }
 
-        if ($token = $this->consume(':\w+')) {
-            return $token; // :var (PDO placeholder)
+        $token = $this->consume(':\w+');
+        if ($token) {
+            return $token; // PDO placeholder
         }
 
-        if ($token = $this->consume('[+\-\*\/.,!=^|&<>:@%~#]+')) {
+        $token = $this->consume('[+\-\*\/.,!=^|&<>:@%~#]+');
+        if ($token) {
             return $token; // various operators
         }
 
-        if ($token = $this->consume(';')) {
+        $token = $this->consume(';');
+        if ($token) {
             return $token; // statement separator (when $delimiter_pattern has been modified)
         }
 
-        if ($token = $this->quoted()) {
+        $token = $this->quoted();
+        if ($token) {
             return $token;
         }
 
-        if ($tokens = $this->grouped()) {
+        $tokens = $this->grouped();
+        if ($tokens) {
             return $tokens;
         }
 
-        if ($token = $this->dollarquoted()) {
+        $token = $this->dollarquoted();
+        if ($token) {
             return $token;
         }
 
@@ -165,18 +170,17 @@ class Tokenizer
         $this->fail("expected SQL token");
     }
 
-    /**
-     * @return string|null
-     */
-    protected function comment()
+    protected function comment(): ?string
     {
-        if ($start = $this->consume('--')) {
+        $start = $this->consume('--');
+        if ($start) {
             $comment = $this->consume("[^\r\n]*");
 
             return "{$start}{$comment}";
         }
 
-        if ($start = $this->consume('\/\*')) {
+        $start = $this->consume('\/\*');
+        if ($start) {
             $comment = $this->consume('.*?\*\/');
 
             if ($comment) {
@@ -189,12 +193,10 @@ class Tokenizer
         return null;
     }
 
-    /**
-     * @return string|null
-     */
-    protected function dollarquoted()
+    protected function dollarquoted(): ?string
     {
-        if ($delimiter = $this->consume('\$\w*\$')) {
+        $delimiter = $this->consume('\$\w*\$');
+        if ($delimiter) {
             $end_delimiter = preg_quote($delimiter);
 
             $body = $this->consume(".*?{$end_delimiter}");
@@ -211,10 +213,7 @@ class Tokenizer
         return null;
     }
 
-    /**
-     * @return array|null
-     */
-    protected function grouped()
+    protected function grouped(): ?array
     {
         static $end = [
             "(" => ")",
@@ -222,7 +221,8 @@ class Tokenizer
             "[" => "]",
         ];
 
-        if ($opening = $this->consume('[({\[]')) {
+        $opening = $this->consume('[({\[]');
+        if ($opening) {
             $closing = $end[$opening];
 
             $tokens = [$opening];
@@ -236,7 +236,8 @@ class Tokenizer
                     return $tokens;
                 }
 
-                if ("" !== $token = $this->token()) {
+                $token = $this->token();
+                if ($token !== "") {
                     $tokens[] = $token;
                 } else {
                     $this->fail("expected token or group end: {$closing}");
@@ -247,12 +248,11 @@ class Tokenizer
         return null;
     }
 
-    /**
-     * @return string|null
-     */
-    protected function quoted()
+    protected function quoted(): ?string
     {
-        if ($quote = $this->consume('[`\'"]')) {
+        $quote = $this->consume('[`\'"]');
+
+        if ($quote) {
             $tokens = [$quote];
 
             $not_quote = '[^' . preg_quote($quote) . '\\\\]*';
@@ -274,7 +274,9 @@ class Tokenizer
                     return implode('', $tokens);
                 }
 
-                if ("" !== $token = $this->consume($not_quote)) {
+                $token = $this->consume($not_quote);
+
+                if ($token !== "") {
                     $tokens[] = $token;
 
                     continue;
@@ -299,7 +301,7 @@ class Tokenizer
 
     protected function matches(string $pattern): bool
     {
-        return preg_match("/{$pattern}/sA", $this->input, $matches, 0, $this->offset) === 1;
+        return preg_match(pattern: "/{$pattern}/sA", subject: $this->input, offset: $this->offset) === 1;
     }
 
     protected function consume(string $pattern): string
@@ -313,8 +315,9 @@ class Tokenizer
         return '';
     }
 
-    protected function fail(string $why)
+    protected function fail(string $why): void
     {
-        throw new RuntimeException("unexpected input: {$why}, at: {$this->offset}, got: \"" . substr($this->input, $this->offset, 1) . "\"");
+        throw new RuntimeException("unexpected input: {$why}, at: {$this->offset}, got: \"" . substr($this->input,
+                $this->offset, 1) . "\"");
     }
 }

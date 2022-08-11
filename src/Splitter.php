@@ -13,7 +13,7 @@ abstract class Splitter
      *
      * @return string[] list of SQL statements
      */
-    public static function split(string $sql, bool $strip_comments = true)
+    public static function split(string $sql, bool $strip_comments = true): array
     {
         $tokens = Tokenizer::tokenize($sql);
 
