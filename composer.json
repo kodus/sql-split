@@ -24,5 +24,8 @@
         "psr-4": {
             "Kodus\\SQLSplit\\": "src/"
         }
+    },
+    "scripts": {
+        "test": "codecept run"
     }
 }
